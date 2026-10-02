@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Noble Shape — Powered by Entera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── ANO Font Family — local files ── */
+/* Coloque os 4 arquivos na mesma pasta do HTML:
+   AnoRegular-Regular.ttf (ou .otf)
+   AnoBold-Regular.ttf
+   AnoBlack-Regular.ttf
+   AnoHalf-Regular.ttf                    */
+
+@font-face {
+  font-family: 'ANO';
+  src: local('AnoRegular-Regular'),
+       url('fonts/AnoRegular-Regular.ttf') format('truetype'),
+       url('fonts/AnoRegular-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ANO';
+  src: local('AnoBold-Regular'),
+       url('fonts/AnoBold-Regular.ttf') format('truetype'),
+       url('fonts/AnoBold-Regular.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ANO';
+  src: local('AnoBlack-Regular'),
+       url('fonts/AnoBlack-Regular.ttf') format('truetype'),
+       url('fonts/AnoBlack-Regular.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ANO';
+  src: local('AnoHalf-Regular'),
+       url('fonts/AnoHalf-Regular.ttf') format('truetype'),
+       url('fonts/AnoHalf-Regular.otf') format('opentype');
+  font-weight: 300; /* Half = leve / textos menores */
+  font-style: normal;
+  font-display: swap;
+}
+</style>
+<style>
+/* ─────────────────────────────────────────────
+   ENTERA BRAND SYSTEM
+   Paleta corporativa:
+     Preto:       #1A1A1A
+     Off-white:   #F5F3EF
+     Cinza-azul:  #9AA8B5
+     Azul Entera: #7196A9
+   Noble Shape (definida neste brandbook):
+     Principal:   #2B5F6E  (azul-teal profundo, derivado do navy do equipamento)
+     Secundária:  #C8372D  (vermelho laser 658nm)
+     Gradiente A: Noble 1 → Noble 2
+     Gradiente B: Noble 1 → Entera 1 (#1A1A1A)
+     Gradiente C: Noble 2 → Entera 2 (#F5F3EF)
+   Tipografia:
+     Display/Títulos: ANO Black (900) — caixa alta, impacto máximo
+     Subtítulos:      ANO Bold (700)  — caixa alta, hierarquia secundária
+     Labels/tags:     ANO Regular (400) — caixa alta, lettering informativo
+     Corpo/texto:     Barlow Light (300) / Regular (400) — textos corridos
+     AnoHalf (300):   textos ANO em tamanhos menores (spec, eyebrow inline)
+   ────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Entera corporate */
+  --e-black:   #1A1A1A;
+  --e-cream:   #F5F3EF;
+  --e-gray:    #9AA8B5;
+  --e-blue:    #7196A9;
+
+  /* Noble Shape sub-brand */
+  --ns-1:      #2B5F6E;   /* principal */
+  --ns-2:      #C8372D;   /* laser red / secundária */
+  --ns-2-soft: #D9534A;
+  --ns-grad-a: linear-gradient(135deg, #2B5F6E 0%, #C8372D 100%);
+  --ns-grad-b: linear-gradient(160deg, #2B5F6E 0%, #1A1A1A 100%);
+  --ns-grad-c: linear-gradient(160deg, #1A1A1A 0%, #2B5F6E 60%, #C8372D 100%);
+
+  /* UI tokens */
+  --bg:        #F5F3EF;
+  --text:      #1A1A1A;
+  --muted:     #6b7a84;
+  --border:    rgba(26,26,26,0.10);
+  --border-w:  0.5px;
+
+  /* Type scale (ANO proportions: 10-16-26-46-68-110-172-288) */
+  --t-xs:  10px;
+  --t-sm:  13px;
+  --t-md:  16px;
+  --t-lg:  26px;
+  --t-xl:  46px;
+  --t-2xl: 68px;
+  --t-3xl: 110px;
+
+  --font-display: 'ANO', 'Barlow Condensed', sans-serif;
+  --font-body:    'Barlow', sans-serif;
+  --radius:       2px;
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-weight: 300; overflow-x: hidden; cursor: none; }
+
+/* ── PAD CURSOR ── */
+.pad-cursor {
+  position: fixed; pointer-events: none; z-index: 9999;
+  top: 0; left: 0;
+  width: 56px; height: 56px;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  transition: filter .15s;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.45));
+}
+.pad-cursor.clicking {
+  filter: drop-shadow(0 0 10px rgba(200,55,45,.8)) drop-shadow(0 2px 6px rgba(0,0,0,.4));
+}
+.pad-cursor.on-interactive {
+  transform: translate(-50%,-50%) scale(1.15);
+}
+
+
+
+/* ── NAV ── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:1.4rem 3.5rem;
+  border-bottom: var(--border-w) solid transparent;
+  transition: background .35s, border-color .35s, backdrop-filter .35s;
+}
+/* Nav transparent over dark video hero */
+nav .nav-logo-e { color:rgba(245,243,239,.8); }
+nav .nav-logo-e::before { color:var(--e-gray); }
+nav .nav-logo-ns { color:rgba(245,243,239,.55); }
+nav .nav-sep { background:rgba(245,243,239,.18); }
+nav .nav-links a { color:rgba(245,243,239,.6); }
+nav .nav-links a:hover { color:var(--e-cream); }
+nav .nav-cta { color:rgba(245,243,239,.6); border-color:rgba(245,243,239,.22); }
+nav .nav-cta:hover { background:rgba(245,243,239,.12); color:var(--e-cream); }
+
+/* Scrolled — cream card */
+nav.scrolled { background:rgba(245,243,239,0.96); border-color:var(--border); backdrop-filter:blur(10px); }
+nav.scrolled .nav-logo-e { color:var(--e-black); }
+nav.scrolled .nav-logo-e::before { color:var(--e-blue); }
+nav.scrolled .nav-logo-ns { color:var(--ns-1); }
+nav.scrolled .nav-sep { background:var(--border); }
+nav.scrolled .nav-links a { color:var(--muted); }
+nav.scrolled .nav-links a:hover { color:var(--text); }
+nav.scrolled .nav-cta { color:var(--ns-1); border-color:var(--ns-1); }
+nav.scrolled .nav-cta:hover { background:var(--ns-1); color:var(--e-cream); }
+
+.nav-brand { display:flex; align-items:center; gap:.75rem; text-decoration:none; }
+.nav-logo-e {
+  font-family: var(--font-display);
+  font-size:1.05rem; font-weight:700; letter-spacing:.12em;
+  color:var(--e-black); text-transform:uppercase;
+  display:flex; align-items:center; gap:.4rem;
+}
+.nav-logo-e::before {
+  content:'⊙';
+  font-size:1.1rem;
+  color: var(--e-blue);
+}
+.nav-entera-svg {
+  height: 1.4rem; width: auto;
+  color: rgba(245,243,239,.8);
+  transition: color .25s;
+}
+nav.scrolled .nav-entera-svg { color: var(--e-black); }
+.nav-logo-ns {
+  font-family: var(--font-display);
+  font-size:.9rem; font-weight:500; letter-spacing:.14em;
+  color: var(--ns-1); text-transform:uppercase;
+}
+
+.nav-links { display:flex; gap:2.5rem; list-style:none; }
+.nav-links a {
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:400; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--muted); text-decoration:none; transition:color .2s;
+}
+.nav-links a:hover { color:var(--text); }
+
+.nav-cta {
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:400; letter-spacing:.16em; text-transform:uppercase;
+  padding:.5rem 1.25rem;
+  border: var(--border-w) solid var(--ns-1);
+  color:var(--ns-1); text-decoration:none;
+  transition:all .22s;
+}
+.nav-cta:hover { background:var(--ns-1); color:var(--e-cream); }
+
+/* ── HERO — fullscreen video ── */
+#hero {
+  height:100vh; min-height:600px;
+  position:relative; overflow:hidden;
+  display:flex; align-items:center;
+}
+
+/* Video BG */
+.hero-video {
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; object-position:center;
+  z-index:0;
+}
+/* Multi-layer overlay:
+   1. base dark so text is always readable
+   2. left vignette to frame the copy
+   3. bottom fade into the stats bar */
+.hero-overlay {
+  position:absolute; inset:0; z-index:1;
+  background:
+    linear-gradient(to right,
+      rgba(13,20,28,.82) 0%,
+      rgba(13,20,28,.55) 45%,
+      rgba(13,20,28,.15) 72%,
+      rgba(13,20,28,.08) 100%),
+    linear-gradient(to top,
+      rgba(13,20,28,.85) 0%,
+      transparent 28%),
+    linear-gradient(to bottom,
+      rgba(13,20,28,.55) 0%,
+      transparent 18%);
+}
+/* Subtle red-laser glow pulse anchored to right side */
+.hero-glow-pulse {
+  position:absolute; z-index:1;
+  right:20%; top:50%; transform:translate(50%,-50%);
+  width:500px; height:500px;
+  background:radial-gradient(circle, rgba(200,55,45,.14) 0%, transparent 60%);
+  animation:pulseGlow 4s ease-in-out infinite;
+  pointer-events:none;
+}
+
+/* Copy block */
+.hero-left {
+  position:relative; z-index:2;
+  padding:0 4rem;
+  max-width:660px;
+  display:flex; flex-direction:column; justify-content:center;
+}
+.hero-eyebrow {
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:400; letter-spacing:.28em; text-transform:uppercase;
+  color:rgba(245,243,239,0.45); margin-bottom:1.5rem;
+  opacity:0; animation:fadeUp .7s .3s ease forwards;
+}
+.hero-title {
+  font-family:var(--font-display);
+  font-size:clamp(4rem, 8vw, 8rem);
+  font-weight:900; text-transform:uppercase;
+  line-height:.88; letter-spacing:-.02em;
+  color:var(--e-cream);
+  opacity:0; animation:fadeUp .7s .45s ease forwards;
+}
+.hero-logo-img {
+  width: min(420px, 80vw);
+  height: auto;
+  display: block;
+  /* filter keeps logo visible at any brightness of the video behind it */
+  filter: drop-shadow(0 2px 20px rgba(0,0,0,.5));
+  opacity: 0;
+  animation: fadeUp .7s .35s ease forwards;
+}
+.hero-sub {
+  font-family:var(--font-body); font-size:var(--t-sm);
+  font-weight:300; line-height:1.8; letter-spacing:.03em;
+  color:rgba(245,243,239,0.52); max-width:400px; margin-top:1.75rem;
+  opacity:0; animation:fadeUp .7s .6s ease forwards;
+}
+.hero-tags {
+  display:flex; flex-wrap:wrap; gap:.45rem; margin-top:1.75rem;
+  opacity:0; animation:fadeUp .7s .72s ease forwards;
+}
+.hero-tag {
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:400; letter-spacing:.14em; text-transform:uppercase;
+  padding:.32rem .85rem;
+  border:var(--border-w) solid rgba(245,243,239,.18);
+  color:rgba(245,243,239,0.6);
+  backdrop-filter:blur(4px);
+  background:rgba(245,243,239,.04);
+}
+.hero-ctas {
+  display:flex; gap:1rem; margin-top:2.75rem;
+  opacity:0; animation:fadeUp .7s .85s ease forwards;
+}
+.btn-solid {
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:500; letter-spacing:.18em; text-transform:uppercase;
+  padding:.75rem 2rem; background:var(--ns-2); color:var(--e-cream);
+  border:none; cursor:pointer; text-decoration:none;
+  transition:background .2s, transform .15s;
+}
+.btn-solid:hover { background:var(--ns-2-soft); transform:translateY(-1px); }
+.btn-outline-light {
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:400; letter-spacing:.18em; text-transform:uppercase;
+  padding:.75rem 2rem; background:rgba(245,243,239,.06);
+  color:rgba(245,243,239,.7); border:var(--border-w) solid rgba(245,243,239,.28);
+  text-decoration:none; cursor:pointer; transition:all .22s;
+  backdrop-filter:blur(6px);
+}
+.btn-outline-light:hover { border-color:rgba(245,243,239,.65); color:var(--e-cream); background:rgba(245,243,239,.1); }
+
+/* Mute toggle button */
+.hero-mute {
+  position:absolute; bottom:6.5rem; right:2.5rem; z-index:10;
+  width:2.4rem; height:2.4rem;
+  background:rgba(245,243,239,.08); border:var(--border-w) solid rgba(245,243,239,.2);
+  color:rgba(245,243,239,.5); font-size:.8rem; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .2s; backdrop-filter:blur(6px);
+  opacity:0; animation:fadeUp .5s 1.1s ease forwards;
+}
+.hero-mute:hover { background:rgba(245,243,239,.15); color:var(--e-cream); }
+
+/* Scroll indicator */
+.hero-scroll-hint {
+  position:absolute; bottom:6rem; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:.5rem; z-index:10;
+  opacity:0; animation:fadeUp .5s 1.2s ease forwards;
+}
+.hero-scroll-hint span {
+  font-family:var(--font-body); font-size:9px; letter-spacing:.22em;
+  text-transform:uppercase; color:rgba(245,243,239,.28);
+}
+.scroll-bar {
+  width:1px; height:36px;
+  background:linear-gradient(to bottom, rgba(245,243,239,.3), transparent);
+  animation:scrollLine 1.9s ease-in-out infinite;
+}
+@keyframes scrollLine {
+  0%   { transform:scaleY(0); transform-origin:top; }
+  50%  { transform:scaleY(1); transform-origin:top; }
+  51%  { transform-origin:bottom; }
+  100% { transform:scaleY(0); transform-origin:bottom; }
+}
+
+/* Hero stats bar */
+.hero-stats {
+  position:absolute; bottom:0; left:0; right:0; z-index:10;
+  display:grid; grid-template-columns:repeat(4,1fr);
+  border-top:var(--border-w) solid rgba(245,243,239,.1);
+  backdrop-filter:blur(12px);
+  background:rgba(13,20,28,.45);
+  opacity:0; animation:fadeUp .6s 1s ease forwards;
+}
+.stat-item {
+  padding:1.25rem 2rem;
+  border-right:var(--border-w) solid rgba(245,243,239,.1);
+}
+.stat-item:last-child { border-right:none; }
+.stat-num {
+  font-family:var(--font-display); font-size:var(--t-xl);
+  font-weight:900; text-transform:uppercase; color:var(--e-cream); line-height:1;
+}
+.stat-num sub { font-size:var(--t-md); font-weight:300; vertical-align:baseline; }
+.stat-label {
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:400; letter-spacing:.18em; text-transform:uppercase;
+  color:rgba(245,243,239,.38); margin-top:.3rem;
+}
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes floatDevice { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-16px)} }
+@keyframes pulseGlow { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.15)} }
+
+/* ── SECTION BASE ── */
+section { overflow:hidden; }
+.container { max-width:1280px; margin:0 auto; padding:0 3.5rem; }
+
+/* Section header Entera pattern */
+.s-header { display:flex; align-items:flex-start; gap:2rem; margin-bottom:3.5rem; }
+.s-num {
+  font-family:var(--font-display); font-size:var(--t-xs);
+  font-weight:700; color:var(--e-blue); letter-spacing:.12em;
+  padding-top:.35rem;
+}
+.s-titles {}
+.s-eyebrow {
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:400; letter-spacing:.28em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:.5rem; display:block;
+}
+.s-title {
+  font-family:var(--font-display); font-size:var(--t-xl);
+  font-weight:900; text-transform:uppercase; line-height:.95;
+  color:var(--text); letter-spacing:-.01em;
+}
+.s-title em { font-style:normal; color:var(--ns-1); }
+.s-body {
+  font-family:var(--font-body); font-size:var(--t-sm);
+  font-weight:300; line-height:1.85; color:var(--muted);
+  max-width:520px; margin-top:1.2rem;
+}
+
+/* Divider line (Entera style) */
+.rule { width:100%; height: var(--border-w); background:var(--border); margin:4rem 0; }
+
+/* ── TRIPLE ENERGY — dark bg ── */
+#technology { background:var(--e-black); padding:7rem 0; }
+#technology .s-eyebrow { color:rgba(245,243,239,.35); }
+#technology .s-title { color:var(--e-cream); }
+#technology .s-title em { color:var(--ns-2); }
+#technology .s-body { color:rgba(245,243,239,.45); }
+#technology .s-num { color:var(--e-blue); }
+
+/* ── ENERGY GRID — 3 image cards ── */
+.energy-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1px; background:rgba(245,243,239,.05);
+  margin-top:4rem;
+}
+.energy-card {
+  position:relative; overflow:hidden;
+  cursor:default;
+}
+.energy-card:hover .energy-img { transform:scale(1.04); }
+
+.energy-img-wrap {
+  position:relative; width:100%; aspect-ratio:4/5;
+  overflow:hidden;
+}
+.energy-img {
+  width:100%; height:100%; object-fit:cover;
+  object-position:center;
+  transition:transform .7s cubic-bezier(.25,.46,.45,.94);
+}
+
+/* Gradient overlays — dark bottom so text is always readable */
+.energy-img-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(
+    to bottom,
+    rgba(13,20,28,0) 0%,
+    rgba(13,20,28,0.1) 35%,
+    rgba(13,20,28,0.75) 70%,
+    rgba(13,20,28,0.95) 100%
+  );
+}
+/* Subtle color tint per energy */
+.energy-overlay-laser {
+  background:linear-gradient(to bottom, rgba(200,55,45,0) 0%, rgba(200,55,45,.06) 50%, rgba(13,20,28,.95) 100%);
+}
+.energy-overlay-rf {
+  background:linear-gradient(to bottom, rgba(232,145,61,0) 0%, rgba(232,145,61,.05) 50%, rgba(13,20,28,.95) 100%);
+}
+.energy-overlay-mf {
+  background:linear-gradient(to bottom, rgba(43,95,110,0) 0%, rgba(43,95,110,.08) 50%, rgba(13,20,28,.95) 100%);
+}
+
+.energy-content {
+  position:absolute; bottom:0; left:0; right:0;
+  padding:2rem 1.75rem 2.25rem;
+  display:flex; flex-direction:column; gap:.5rem;
+}
+.energy-tag {
+  font-family:var(--font-display); font-size:var(--t-xs);
+  font-weight:700; letter-spacing:.25em;
+  display:inline-block; margin-bottom:.25rem;
+}
+.energy-tag-laser { color:var(--ns-2); }
+.energy-tag-rf    { color:#E8913D; }
+.energy-tag-mf    { color:var(--e-blue); }
+
+.energy-name {
+  font-family:var(--font-display); font-size:clamp(1.5rem,2.5vw,2.2rem);
+  font-weight:900; text-transform:uppercase; line-height:.95;
+  letter-spacing:-.01em; color:var(--e-cream);
+}
+.energy-spec {
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:400; letter-spacing:.22em; text-transform:uppercase;
+  color:rgba(245,243,239,.4); margin-top:.1rem;
+}
+.energy-desc {
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:300; line-height:1.75; color:rgba(245,243,239,.55);
+  margin-top:.25rem;
+}
+.energy-pill {
+  display:inline-block; margin-top:.35rem;
+  font-family:var(--font-body); font-size:10px;
+  font-weight:400; letter-spacing:.14em; text-transform:uppercase;
+  padding:.28rem .7rem; border:var(--border-w) solid;
+}
+.energy-pill-laser { color:var(--ns-2);  border-color:rgba(200,55,45,.35); }
+.energy-pill-rf    { color:#E8913D;       border-color:rgba(232,145,61,.35); }
+.energy-pill-mf    { color:var(--e-blue); border-color:rgba(43,95,110,.45); }
+
+@media(max-width:960px){
+  .energy-grid { grid-template-columns:1fr; }
+  .energy-img-wrap { aspect-ratio:16/9; }
+}
+
+.tech-list { display:flex; flex-direction:column; }
+.tech-item {
+  padding:1.75rem 0; border-bottom: var(--border-w) solid rgba(245,243,239,.08);
+  display:grid; grid-template-columns:2.5rem 1fr; gap:1.25rem; align-items:start;
+  transition:background .2s;
+  cursor:default;
+}
+.tech-item:first-child { border-top: var(--border-w) solid rgba(245,243,239,.08); }
+.tech-code {
+  font-family:var(--font-display); font-weight:700; font-size:var(--t-xs);
+  letter-spacing:.12em; text-transform:uppercase; padding-top:.25rem;
+}
+.tech-code.laser { color:var(--ns-2); }
+.tech-code.rf { color:#E8913D; }
+.tech-code.mf { color:var(--e-blue); }
+.tech-name {
+  font-family:var(--font-display); font-weight:700; font-size:var(--t-md);
+  letter-spacing:.08em; text-transform:uppercase; color:var(--e-cream); margin-bottom:.4rem;
+}
+.tech-desc {
+  font-family:var(--font-body); font-size:var(--t-sm);
+  font-weight:300; line-height:1.75; color:rgba(245,243,239,.45);
+}
+.tech-pill {
+  display:inline-block; margin-top:.6rem;
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:400; letter-spacing:.14em; text-transform:uppercase;
+  padding:.25rem .7rem; border: var(--border-w) solid;
+}
+.laser .tech-pill { color:var(--ns-2); border-color:rgba(200,55,45,.3); }
+.rf .tech-pill { color:#E8913D; border-color:rgba(232,145,61,.3); }
+.mf .tech-pill { color:var(--e-blue); border-color:rgba(113,150,169,.3); }
+
+.tech-visual {
+  position:sticky; top:6rem;
+  display:flex; align-items:center; justify-content:center;
+  min-height:500px;
+}
+.tech-visual img {
+  max-width:100%; filter:drop-shadow(0 0 50px rgba(200,55,45,.22));
+  animation:floatDevice 5s ease-in-out infinite;
+}
+.tech-visual-placeholder {
+  width:85%; aspect-ratio:3/4; background:rgba(245,243,239,.03);
+  border: var(--border-w) solid rgba(245,243,239,.08);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.75rem;
+}
+.tech-visual-placeholder span { font-family:var(--font-body); font-size:var(--t-xs); letter-spacing:.14em; color:rgba(245,243,239,.2); text-transform:uppercase; }
+
+/* ── DERME — cream bg ── */
+#mechanism { background:var(--e-cream); padding:7rem 0; }
+.mechanism-layout { display:grid; grid-template-columns:1fr 1.5fr; gap:5rem; align-items:center; }
+.derme-box {
+  aspect-ratio:16/9; background:var(--e-black);
+  border: var(--border-w) solid rgba(26,26,26,.15);
+  position:relative; overflow:hidden;
+}
+/* Vimeo background player — fills the box, chrome hidden via overscan */
+.derme-vimeo-wrap {
+  position:absolute; inset:0; overflow:hidden;
+}
+.derme-iframe {
+  position:absolute;
+  top:-10%; left:-10%;
+  width:120%; height:120%;
+  border:0; display:block;
+  pointer-events:none;
+}
+.derme-label {
+  position:absolute; bottom:0; left:0; right:0;
+  display:flex; justify-content:space-between;
+  padding:.75rem 1.25rem;
+  background:rgba(13,20,28,.75);
+  backdrop-filter:blur(8px);
+  border-top: var(--border-w) solid rgba(245,243,239,.08);
+  z-index:2;
+}
+.derme-label-item { display:flex; align-items:center; gap:.4rem; }
+.derme-dot { width:6px; height:6px; border-radius:50%; }
+.derme-label-text { font-family:var(--font-body); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:rgba(245,243,239,.5); }
+
+/* ── PADS — white-cream grid ── */
+#pads { background:var(--e-cream); padding:7rem 0; border-top: var(--border-w) solid var(--border); }
+.pads-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); margin-top:4rem; }
+.pad-cell {
+  background:var(--e-cream); padding:2.5rem 1.75rem 2rem;
+  transition:background .2s;
+}
+.pad-cell:hover { background:#EDEAE4; }
+.pad-img { width:100%; aspect-ratio:1; display:flex; align-items:center; justify-content:center; margin-bottom:1.5rem; }
+.pad-img img { max-width:80%; height:auto; filter:drop-shadow(0 4px 20px rgba(26,26,26,.1)); transition:transform .4s ease; }
+.pad-cell:hover .pad-img img { transform:translateY(-6px); }
+.pad-type {
+  font-family:var(--font-display); font-size:var(--t-xs);
+  font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--ns-2); margin-bottom:.35rem; display:block;
+}
+.pad-name {
+  font-family:var(--font-display); font-size:var(--t-md);
+  font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+  color:var(--text); margin-bottom:.5rem;
+}
+.pad-desc {
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:300; line-height:1.75; color:var(--muted);
+}
+.pad-features { display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.9rem; }
+.pad-feat {
+  font-family:var(--font-body); font-size:10px;
+  font-weight:400; letter-spacing:.12em; text-transform:uppercase;
+  padding:.22rem .6rem; border: var(--border-w) solid var(--border);
+  color:var(--muted);
+}
+/* Last cell — callout */
+.pad-cell-cta { background:var(--ns-1); display:flex; flex-direction:column; justify-content:flex-end; padding:2.5rem 1.75rem; }
+.pad-cell-cta:hover { background:#24515e; }
+.pad-cta-num { font-family:var(--font-display); font-size:5rem; font-weight:900; color:rgba(245,243,239,.1); line-height:1; }
+.pad-cta-title { font-family:var(--font-display); font-size:var(--t-lg); font-weight:900; text-transform:uppercase; color:var(--e-cream); line-height:1.1; margin:1rem 0; }
+.pad-cta-sub { font-family:var(--font-body); font-size:var(--t-xs); font-weight:300; color:rgba(245,243,239,.55); line-height:1.7; }
+
+/* ── FOR DOCTORS — dark ── */
+#forDoctors { background:var(--e-black); padding:7rem 0; }
+#forDoctors .s-eyebrow { color:rgba(245,243,239,.3); }
+#forDoctors .s-title { color:var(--e-cream); }
+#forDoctors .s-title em { color:var(--e-blue); }
+#forDoctors .s-body { color:rgba(245,243,239,.4); }
+
+.doctors-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:rgba(245,243,239,.06); margin-top:4rem; }
+.doc-card { background:var(--e-black); padding:2.5rem 2rem; border-top:2px solid transparent; transition:border-color .3s; }
+.doc-card:hover { border-color:var(--ns-1); }
+.doc-num { font-family:var(--font-display); font-size:4rem; font-weight:900; color:rgba(245,243,239,.05); line-height:1; margin-bottom:1.25rem; }
+.doc-title { font-family:var(--font-display); font-size:var(--t-md); font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--e-cream); margin-bottom:.75rem; }
+.doc-body { font-family:var(--font-body); font-size:var(--t-xs); font-weight:300; line-height:1.8; color:rgba(245,243,239,.4); }
+
+/* ── BEFORE / AFTER SLIDER ── */
+#forDoctors { background:var(--e-black); }
+
+.ba-section {
+  width:100%; padding:6rem 0 0;
+  display:flex; flex-direction:column; align-items:center;
+}
+.ba-meta {
+  text-align:center; margin-bottom:3rem; padding:0 2rem;
+}
+.ba-eyebrow {
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:400; letter-spacing:.28em; text-transform:uppercase;
+  color:rgba(245,243,239,.35); display:block; margin-bottom:.75rem;
+}
+.ba-title {
+  font-family:var(--font-body); font-size:clamp(1.6rem,3.5vw,3rem);
+  font-weight:300; color:var(--e-cream); line-height:1.2;
+}
+.ba-title em { font-style:normal; color:rgba(245,243,239,.5); }
+
+.ba-slider-wrap {
+  position:relative; width:100%; max-width:520px;
+  aspect-ratio:351/293;
+  overflow:hidden;
+  cursor:ew-resize;
+  user-select:none;
+}
+/* Both images fill the same box */
+.ba-img { position:absolute; inset:0; }
+.ba-img img { width:100%; height:100%; object-fit:cover; object-position:center top; display:block; }
+
+/* After image: clipped from left by a CSS clip-path controlled by JS */
+.ba-img-after {
+  clip-path: inset(0 0 0 50%); /* default 50% — updated by JS */
+  transition: clip-path 0s; /* instant during drag */
+}
+
+/* Divider line */
+.ba-divider {
+  position:absolute; top:0; bottom:0;
+  left:50%; /* updated by JS */
+  width:2px;
+  background:rgba(255,255,255,0.9);
+  transform:translateX(-50%);
+  pointer-events:none;
+  box-shadow: 0 0 8px rgba(255,255,255,.4);
+}
+/* Handle circle */
+.ba-handle {
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  width:44px; height:44px; border-radius:50%;
+  background:white;
+  box-shadow:0 2px 16px rgba(0,0,0,.5);
+  display:flex; align-items:center; justify-content:center;
+  pointer-events:none;
+}
+.ba-handle-arrows {
+  display:flex; align-items:center; gap:0;
+}
+
+/* Labels */
+.ba-label-chip {
+  position:absolute; top:1.25rem;
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:500; letter-spacing:.18em; text-transform:uppercase;
+  padding:.3rem .85rem;
+  pointer-events:none;
+}
+.ba-label-before {
+  left:1.25rem;
+  background:rgba(26,26,26,.65);
+  color:rgba(245,243,239,.7);
+  backdrop-filter:blur(6px);
+}
+.ba-label-after {
+  right:1.25rem;
+  background:var(--ns-2);
+  color:var(--e-cream);
+}
+
+/* Case selector pills */
+.ba-cases {
+  display:flex; gap:.5rem; margin-bottom:2rem;
+}
+.ba-case-btn {
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:400; letter-spacing:.16em; text-transform:uppercase;
+  padding:.45rem 1.2rem;
+  background:transparent;
+  border:var(--border-w) solid rgba(245,243,239,.18);
+  color:rgba(245,243,239,.4);
+  cursor:pointer; transition:all .2s;
+}
+.ba-case-btn:hover { border-color:rgba(245,243,239,.4); color:rgba(245,243,239,.7); }
+.ba-case-btn.active {
+  background:var(--e-cream); color:var(--e-black);
+  border-color:var(--e-cream);
+}
+
+/* ── PIONEER FULL WIDTH ── */
+.pioneer-full {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:5rem; align-items:start;
+  padding:3rem 0;
+  border-top: var(--border-w) solid rgba(245,243,239,.08);
+}
+.pioneer-left { display:flex; flex-direction:column; }
+.pioneer-right {
+  display:flex; flex-direction:column;
+  gap:0;
+}
+.pioneer-item {
+  display:grid; grid-template-columns:2.5rem 1fr;
+  gap:1rem; align-items:flex-start;
+  padding:1.25rem 0;
+  border-bottom: var(--border-w) solid rgba(245,243,239,.07);
+}
+.pioneer-item:last-child { border-bottom:none; }
+.pioneer-n {
+  font-family:var(--font-display); font-size:var(--t-xs);
+  font-weight:700; letter-spacing:.14em; color:rgba(245,243,239,.2);
+  padding-top:.2rem;
+}
+.pioneer-title {
+  font-family:var(--font-display); font-size:var(--t-md);
+  font-weight:700; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--e-cream); margin-bottom:.35rem;
+}
+.pioneer-body {
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:300; line-height:1.75; color:rgba(245,243,239,.4);
+}
+
+@media(max-width:960px){
+  .ba-slider-wrap { max-width:100%; }
+  .pioneer-full { grid-template-columns:1fr; gap:3rem; }
+}
+.doc-card--highlight { border-top-color: var(--ns-2) !important; }
+.doc-card--pioneer { background: linear-gradient(160deg, #1e3040 0%, var(--e-black) 100%); }
+
+/* ROI bar */
+.doc-roi {
+  display:flex; align-items:center; gap:0;
+  margin-top:1.5rem;
+  border:var(--border-w) solid rgba(245,243,239,.08);
+}
+.doc-roi-item {
+  flex:1; padding:.9rem 1rem;
+  display:flex; flex-direction:column; gap:.2rem;
+}
+.doc-roi-div { width:var(--border-w); align-self:stretch; background:rgba(245,243,239,.08); }
+.doc-roi-val {
+  font-family:var(--font-display); font-size:1.3rem; font-weight:900;
+  color:var(--e-cream); line-height:1;
+}
+.doc-roi-unit { font-size:.85rem; font-weight:400; opacity:.6; }
+.doc-roi-label {
+  font-family:var(--font-body); font-size:10px; font-weight:300;
+  letter-spacing:.12em; text-transform:uppercase; color:rgba(245,243,239,.35);
+}
+
+/* Before/After */
+.doc-ba {
+  display:grid; grid-template-columns:1fr auto 1fr;
+  gap:0; margin-top:1.5rem; height:140px;
+  border:var(--border-w) solid rgba(245,243,239,.08);
+  overflow:hidden;
+}
+.doc-ba-half {
+  position:relative; display:flex;
+  align-items:center; justify-content:center;
+  background:rgba(245,243,239,.03);
+}
+.doc-ba-label {
+  position:absolute; top:.5rem; left:.5rem;
+  font-family:var(--font-body); font-size:9px; font-weight:500;
+  letter-spacing:.18em; text-transform:uppercase;
+  background:rgba(245,243,239,.15); color:var(--e-cream);
+  padding:.2rem .55rem;
+}
+.doc-ba-img-ph {
+  display:flex; flex-direction:column; align-items:center;
+  gap:.4rem; opacity:.3;
+}
+.doc-ba-img-ph span {
+  font-family:var(--font-body); font-size:9px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--e-cream);
+}
+.doc-ba-divider {
+  width:2rem; display:flex; align-items:center; justify-content:center;
+  background:rgba(245,243,239,.04);
+  border-left:var(--border-w) solid rgba(245,243,239,.08);
+  border-right:var(--border-w) solid rgba(245,243,239,.08);
+}
+.doc-ba-arrow {
+  font-size:.75rem; color:var(--ns-2); font-weight:700;
+}
+
+/* Pioneer card */
+.doc-pioneer-badge {
+  display:inline-flex; align-items:center; gap:.4rem;
+  font-family:var(--font-body); font-size:10px; font-weight:500;
+  letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ns-2); border:var(--border-w) solid rgba(200,55,45,.3);
+  padding:.3rem .75rem; margin-bottom:1.25rem;
+}
+.doc-pioneer-list { display:flex; flex-direction:column; gap:.6rem; margin-top:1.25rem; }
+.doc-pioneer-item {
+  display:flex; align-items:center; gap:.65rem;
+  font-family:var(--font-body); font-size:var(--t-xs);
+  font-weight:300; color:rgba(245,243,239,.55); line-height:1.5;
+}
+.doc-pioneer-dot {
+  width:4px; height:4px; border-radius:50%;
+  background:var(--ns-2); flex-shrink:0;
+}
+
+/* ── CTA BAND ── */
+#cta {
+  background: var(--ns-grad-b);
+  padding:6rem 0; position:relative; overflow:hidden;
+}
+.cta-inner { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; }
+.cta-left .s-title { color:var(--e-cream); }
+.cta-left .s-title em { color:var(--ns-2); }
+.cta-left .s-body { color:rgba(245,243,239,.45); max-width:none; }
+.cta-form { display:flex; flex-direction:column; gap:1rem; }
+.cta-field {
+  padding:.9rem 1.25rem;
+  background:rgba(245,243,239,.06); border: var(--border-w) solid rgba(245,243,239,.15);
+  color:var(--e-cream); font-family:var(--font-body); font-size:var(--t-sm); font-weight:300;
+  outline:none; transition:border-color .2s; border-radius:0;
+}
+.cta-field::placeholder { color:rgba(245,243,239,.3); }
+.cta-field:focus { border-color:var(--ns-2); }
+.cta-note { font-family:var(--font-body); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:rgba(245,243,239,.25); margin-top:.25rem; }
+
+/* ── POWERED BY ENTERA FOOTER-STAMP ── */
+.powered-stamp {
+  display:flex; align-items:center; gap:.6rem; margin-top:3rem;
+}
+.powered-stamp span {
+  font-family:var(--font-body); font-size:10px;
+  font-weight:400; letter-spacing:.18em; text-transform:uppercase;
+  color:rgba(245,243,239,.3);
+}
+.powered-stamp strong { font-weight:600; color:rgba(245,243,239,.55); }
+
+/* ── FOOTER ── */
+footer {
+  background:var(--e-black); padding:2.25rem 3.5rem;
+  display:flex; align-items:center; justify-content:space-between;
+  border-top: var(--border-w) solid rgba(245,243,239,.06);
+}
+.footer-brand { display:flex; align-items:center; gap:.75rem; }
+.footer-entera-svg { height:1.1rem; width:auto; color:rgba(245,243,239,.55); }
+.footer-logo-e { font-family:var(--font-display); font-size:.85rem; font-weight:700; letter-spacing:.14em; color:rgba(245,243,239,.7); text-transform:uppercase; display:flex; align-items:center; gap:.35rem; }
+.footer-logo-e::before { content:'⊙'; color:var(--e-blue); }
+.footer-sep { width:1px; height:14px; background:rgba(245,243,239,.12); }
+.footer-ns { font-family:var(--font-display); font-size:.78rem; font-weight:500; letter-spacing:.12em; color:rgba(43,95,110,.7); text-transform:uppercase; }
+.footer-links { display:flex; gap:2rem; }
+.footer-links a { font-family:var(--font-body); font-size:var(--t-xs); letter-spacing:.1em; color:rgba(245,243,239,.3); text-decoration:none; transition:color .2s; }
+.footer-links a:hover { color:rgba(245,243,239,.7); }
+.footer-copy { font-family:var(--font-body); font-size:var(--t-xs); letter-spacing:.08em; color:rgba(245,243,239,.2); }
+
+/* ── SCROLL REVEAL ── */
+.reveal { opacity:0; transform:translateY(24px); transition:opacity .75s ease, transform .75s ease; }
+.reveal.in { opacity:1; transform:translateY(0); }
+.delay-1 { transition-delay:.1s; } .delay-2 { transition-delay:.18s; } .delay-3 { transition-delay:.26s; } .delay-4 { transition-delay:.34s; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  nav { padding:1rem 1.5rem; }
+  .nav-links { display:none; }
+  #hero { grid-template-columns:1fr; }
+  .hero-right { min-height:50vw; }
+  .hero-stats { grid-template-columns:repeat(2,1fr); }
+  .tech-layout,.mechanism-layout,.cta-inner { grid-template-columns:1fr; }
+  .pads-grid { grid-template-columns:1fr 1fr; }
+  .doctors-grid { grid-template-columns:1fr; }
+  section.container, .container { padding:4rem 1.5rem; }
+  footer { flex-direction:column; gap:1.25rem; text-align:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── PAD CURSOR SVG ── -->
+<svg class="pad-cursor" id="padCursor" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pad body -->
+  <rect class="pad-body" x="4" y="4" width="48" height="48" rx="10" ry="10"
+        fill="#F0EEE8" stroke="#C8C4BC" stroke-width=".8"/>
+  <!-- Chrome electrodes — top -->
+  <rect x="11" y="9" width="14" height="6" rx="2" fill="#B8B4AC" stroke="#A0A098" stroke-width=".5"/>
+  <rect x="31" y="9" width="14" height="6" rx="2" fill="#B8B4AC" stroke="#A0A098" stroke-width=".5"/>
+  <!-- Chrome electrodes — middle sides -->
+  <rect x="7"  y="23" width="7" height="10" rx="2" fill="#B8B4AC" stroke="#A0A098" stroke-width=".5"/>
+  <rect x="42" y="23" width="7" height="10" rx="2" fill="#B8B4AC" stroke="#A0A098" stroke-width=".5"/>
+  <!-- Chrome electrodes — bottom -->
+  <rect x="11" y="41" width="14" height="6" rx="2" fill="#B8B4AC" stroke="#A0A098" stroke-width=".5"/>
+  <rect x="31" y="41" width="14" height="6" rx="2" fill="#B8B4AC" stroke="#A0A098" stroke-width=".5"/>
+  <!-- 9 laser emission points — 3×3 grid -->
+  <!-- Row 1 -->
+  <circle cx="19" cy="19" r="2.2" fill="#1A1A1A" stroke="#333" stroke-width=".4"/>
+  <circle cx="28" cy="19" r="2.2" fill="#1A1A1A" stroke="#333" stroke-width=".4"/>
+  <circle cx="37" cy="19" r="2.2" fill="#1A1A1A" stroke="#333" stroke-width=".4"/>
+  <!-- Row 2 -->
+  <circle cx="19" cy="28" r="2.2" fill="#1A1A1A" stroke="#333" stroke-width=".4"/>
+  <circle cx="28" cy="28" r="2.2" fill="#1A1A1A" stroke="#333" stroke-width=".4"/>
+  <circle cx="37" cy="28" r="2.2" fill="#1A1A1A" stroke="#333" stroke-width=".4"/>
+  <!-- Row 3 -->
+  <circle cx="19" cy="37" r="2.2" fill="#1A1A1A" stroke="#333" stroke-width=".4"/>
+  <circle cx="28" cy="37" r="2.2" fill="#1A1A1A" stroke="#333" stroke-width=".4"/>
+  <circle cx="37" cy="37" r="2.2" fill="#1A1A1A" stroke="#333" stroke-width=".4"/>
+  <!-- Laser glow — shown on click/hover interactive (opacity toggled via JS) -->
+  <circle id="lg1" cx="19" cy="19" r="2.2" fill="#C8372D" opacity="0" style="transition:opacity .12s"><animate attributeName="opacity" values="0;.9;0" dur="1.2s" repeatCount="indefinite" begin="0s"/></circle>
+  <circle id="lg2" cx="28" cy="19" r="2.2" fill="#C8372D" opacity="0"><animate attributeName="opacity" values="0;.9;0" dur="1.2s" repeatCount="indefinite" begin=".13s"/></circle>
+  <circle id="lg3" cx="37" cy="19" r="2.2" fill="#C8372D" opacity="0"><animate attributeName="opacity" values="0;.9;0" dur="1.2s" repeatCount="indefinite" begin=".26s"/></circle>
+  <circle id="lg4" cx="19" cy="28" r="2.2" fill="#C8372D" opacity="0"><animate attributeName="opacity" values="0;.9;0" dur="1.2s" repeatCount="indefinite" begin=".39s"/></circle>
+  <circle id="lg5" cx="28" cy="28" r="2.2" fill="#C8372D" opacity="0"><animate attributeName="opacity" values="0;.9;0" dur="1.2s" repeatCount="indefinite" begin=".52s"/></circle>
+  <circle id="lg6" cx="37" cy="28" r="2.2" fill="#C8372D" opacity="0"><animate attributeName="opacity" values="0;.9;0" dur="1.2s" repeatCount="indefinite" begin=".65s"/></circle>
+  <circle id="lg7" cx="19" cy="37" r="2.2" fill="#C8372D" opacity="0"><animate attributeName="opacity" values="0;.9;0" dur="1.2s" repeatCount="indefinite" begin=".78s"/></circle>
+  <circle id="lg8" cx="28" cy="37" r="2.2" fill="#C8372D" opacity="0"><animate attributeName="opacity" values="0;.9;0" dur="1.2s" repeatCount="indefinite" begin=".91s"/></circle>
+  <circle id="lg9" cx="37" cy="37" r="2.2" fill="#C8372D" opacity="0"><animate attributeName="opacity" values="0;.9;0" dur="1.2s" repeatCount="indefinite" begin="1.04s"/></circle>
+  <!-- RF glow rings — appear when hovering interactive elements -->
+  <circle cx="28" cy="28" r="18" fill="none" stroke="#C8372D" stroke-width=".6" opacity="0" id="rfRing1">
+    <animate attributeName="r" values="10;22" dur="1s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values=".5;0" dur="1s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="28" cy="28" r="22" fill="none" stroke="#C8372D" stroke-width=".4" opacity="0" id="rfRing2">
+    <animate attributeName="r" values="14;26" dur="1s" repeatCount="indefinite" begin=".4s"/>
+    <animate attributeName="opacity" values=".3;0" dur="1s" repeatCount="indefinite" begin=".4s"/>
+  </circle>
+</svg>
+
+
+
+<!-- ─── NAV ─── -->
+<nav id="nav">
+  <a href="#" class="nav-brand">
+    <svg class="nav-entera-svg" viewBox="0 420 1065 240" xmlns="http://www.w3.org/2000/svg" aria-label="entera">
+      <path fill-rule="nonzero" fill="currentColor" d="M 692.5 540.527344 C 677.484375 478.582031 589.859375 478.464844 575.382812 540.527344 Z M 719.382812 567.40625 L 575.382812 567.40625 C 584.398438 609.011719 633.125 628.054688 668.414062 603.320312 C 673.6875 599.628906 677.714844 594.671875 682.441406 590.40625 L 708.796875 596.679688 C 676.605469 654.195312 593.871094 655.566406 559.621094 599.007812 C 529.921875 549.957031 555.613281 484.5625 611.109375 470.175781 C 672.820312 454.179688 727.609375 505.589844 719.382812 567.40625"/>
+      <path fill-rule="nonzero" fill="currentColor" d="M 1031.40625 554.003906 C 1031.40625 520.691406 1004.402344 493.6875 971.089844 493.6875 C 937.773438 493.6875 910.769531 520.691406 910.769531 554.003906 C 910.769531 587.316406 937.773438 614.324219 971.089844 614.324219 C 1004.402344 614.324219 1031.40625 587.316406 1031.40625 554.003906 M 1058.261719 635.566406 L 1031.382812 635.566406 L 1031.382812 617.328125 L 1014.121094 629.34375 C 949.484375 665.078125 873.273438 611.808594 885.765625 538.433594 C 896.769531 473.804688 976.3125 444.75 1026.59375 487.238281 C 1072.144531 525.722656 1054.972656 583.097656 1058.261719 635.566406"/>
+      <path fill-rule="nonzero" fill="currentColor" d="M 382.421875 635.566406 L 356.5 635.566406 L 356.5 541.007812 C 356.5 512.882812 331.675781 495.265625 304.988281 495.265625 C 279.023438 495.265625 255.761719 509.457031 253.78125 540.046875 L 253.78125 635.566406 L 226.902344 635.566406 C 228.03125 606.929688 227.289062 577.195312 226.863281 548.648438 C 225.40625 451.1875 357.222656 442.125 379.792969 525.398438 C 380.425781 527.734375 382.804688 536.101562 382.421875 545.6875 Z"/>
+      <path fill-rule="nonzero" fill="currentColor" d="M 182.742188 512.679688 L 156.542969 518.476562 C 130.773438 482.972656 76.5 486.324219 55.25 524.875 C 27.25 575.671875 80.554688 632.730469 133.484375 608.871094 C 143.289062 604.457031 149.140625 596.785156 157.351562 590.421875 L 182.3125 596.167969 C 183.726562 597.96875 174.910156 609.097656 173.167969 611.113281 C 127.527344 663.777344 40.3125 642.417969 23.851562 575.09375 C 3.957031 493.722656 99.792969 433.558594 163.992188 487.753906 C 167.226562 490.488281 185.316406 509.683594 182.742188 512.679688"/>
+      <path fill-rule="nonzero" fill="currentColor" d="M 458.261719 427.246094 L 458.261719 473.328125 L 504.339844 473.328125 L 504.339844 498.289062 L 458.261719 498.289062 L 458.261719 596.6875 C 458.261719 597.675781 462.09375 605.015625 463.066406 606.285156 C 471.722656 617.597656 487.480469 617.148438 497.964844 608.785156 L 515.789062 626.582031 C 501.859375 642.753906 477 645.3125 458.382812 635.925781 C 443.882812 628.613281 431.382812 610.398438 431.382812 593.808594 L 431.382812 428.6875 L 432.820312 427.246094 Z"/>
+      <path fill-rule="nonzero" fill="currentColor" d="M 803.863281 635.566406 L 777.941406 635.566406 L 777.941406 511.246094 C 777.941406 505.125 784.570312 492.179688 788.523438 487.269531 C 806.988281 464.324219 841.648438 462.183594 862.398438 483.40625 L 843.566406 501.070312 C 832.199219 492.597656 815.945312 492.84375 807.855469 505.640625 C 806.625 507.589844 803.863281 515.089844 803.863281 517.007812 Z"/>
+      <path fill-rule="nonzero" fill="currentColor" d="M 170.261719 567.40625 L 74.261719 567.40625 L 74.261719 540.527344 L 170.261719 540.527344 Z"/>
+    </svg>
+    <span class="nav-sep"></span>
+    <span class="nav-logo-ns">Noble Shape</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#technology">Tecnologia</a></li>
+    <li><a href="#mechanism">Mecanismo</a></li>
+    <li><a href="#pads">Aplicadores</a></li>
+    <li><a href="#forDoctors">Para Médicos</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Solicitar demonstração</a>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+
+  <!-- Vídeo Kling — Hero orbit -->
+  <video class="hero-video" id="heroVideo"
+         autoplay muted loop playsinline
+         poster="hero-poster.jpg">
+    <source src="noble-shape-hero.mp4" type="video/mp4">
+  </video>
+
+  <!-- Overlay layers -->
+  <div class="hero-overlay"></div>
+  <div class="hero-glow-pulse"></div>
+
+  <!-- Copy -->
+  <div class="hero-left">
+    <p class="hero-eyebrow">Powered by Entera · Eunsung Global</p>
+    <img src="noble-shape-logo.png" alt="Noble Shape" class="hero-logo-img">
+    <p class="hero-sub">Três energias simultâneas. Laser 658nm + RF 1MHz + Frequência Média AM em 8 pads simultâneos. 30 minutos. Zero downtime.</p>
+    <div class="hero-tags">
+      <span class="hero-tag">Laser 658nm</span>
+      <span class="hero-tag">RF 1MHz</span>
+      <span class="hero-tag">Freq. Média</span>
+      <span class="hero-tag">Hands-free</span>
+      <span class="hero-tag">Exclusividade Médica</span>
+    </div>
+    <div class="hero-ctas">
+      <a href="#mechanism" class="btn-solid">Ver como funciona</a>
+      <a href="#cta" class="btn-outline-light">Para médicos</a>
+    </div>
+  </div>
+
+  <!-- Mute / Unmute toggle -->
+  <button class="hero-mute" id="muteBtn" onclick="toggleMute()" title="Som">🔇</button>
+
+  <!-- Scroll hint -->
+  <div class="hero-scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-bar"></div>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Energias combinadas</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">8</div>
+      <div class="stat-label">Pads simultâneos</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">30<sub>min</sub></div>
+      <div class="stat-label">Por sessão</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">0</div>
+      <div class="stat-label">Downtime</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TECHNOLOGY ─── -->
+<section id="technology">
+  <div class="container">
+    <div class="s-header reveal">
+      <span class="s-num">01</span>
+      <div class="s-titles">
+        <span class="s-eyebrow">A tríade tecnológica</span>
+        <h2 class="s-title">TRÊS ENERGIAS.<br><em>UM RESULTADO</em><br>COMPOSTO.</h2>
+        <p class="s-body">Cada tecnologia atua em uma camada diferente do tecido. Combinadas em simultâneo, o resultado é sinérgico — maior do que a soma das partes.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full-bleed 3-column energy cards -->
+  <div class="energy-grid">
+
+    <!-- 01 — Low Level Laser -->
+    <div class="energy-card reveal">
+      <div class="energy-img-wrap">
+        <img src="img-laser-lllt.jpg" alt="Low Level Laser 658nm — Noble Shape" class="energy-img">
+        <div class="energy-img-overlay energy-overlay-laser"></div>
+      </div>
+      <div class="energy-content">
+        <div class="energy-tag energy-tag-laser">01</div>
+        <div class="energy-name">Low Level<br>Laser</div>
+        <div class="energy-spec">658 nm</div>
+        <p class="energy-desc">Fotobiomodulação de precisão. O feixe penetra na camada adiposa e torna as membranas das células de gordura permeáveis — o conteúdo lipídico é metabolizado pelo sistema linfático sem dano ao tecido.</p>
+        <span class="energy-pill energy-pill-laser">Metabolização lipídica</span>
+      </div>
+    </div>
+
+    <!-- 02 — Radio Frequency 1MHz -->
+    <div class="energy-card reveal delay-1">
+      <div class="energy-img-wrap">
+        <img src="img-rf-1mhz.jpg" alt="Radio Frequency 1MHz — Noble Shape" class="energy-img">
+        <div class="energy-img-overlay energy-overlay-rf"></div>
+      </div>
+      <div class="energy-content">
+        <div class="energy-tag energy-tag-rf">02</div>
+        <div class="energy-name">Radio<br>Frequency</div>
+        <div class="energy-spec">1 MHz</div>
+        <p class="energy-desc">Aquecimento controlado da derme profunda a 38–42°C. Estimula fibroblastos a produzir colágeno e elastina. Sensor térmico integrado em cada pad garante temperatura ideal e segurança máxima.</p>
+        <span class="energy-pill energy-pill-rf">Tightening dérmico</span>
+      </div>
+    </div>
+
+    <!-- 03 — Mid Frequency AM -->
+    <div class="energy-card reveal delay-2">
+      <div class="energy-img-wrap">
+        <img src="img-mid-freq.jpg" alt="Frequência Média AM — Noble Shape" class="energy-img">
+        <div class="energy-img-overlay energy-overlay-mf"></div>
+      </div>
+      <div class="energy-content">
+        <div class="energy-tag energy-tag-mf">03</div>
+        <div class="energy-name">Frequência<br>Média AM</div>
+        <div class="energy-spec">Mid Freq.</div>
+        <p class="energy-desc">Contração muscular rítmica por amplitude modulada. Ativa o sistema linfático e acelera a drenagem do conteúdo lipídico mobilizado pelo laser. O efeito das três energias juntas é sinérgico.</p>
+        <span class="energy-pill energy-pill-mf">Drenagem ativa</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── MECHANISM / DERME ─── -->
+<section id="mechanism">
+  <div class="container" style="padding-top:7rem;padding-bottom:7rem;">
+    <div class="s-header reveal">
+      <span class="s-num">02</span>
+      <div class="s-titles">
+        <span class="s-eyebrow">Mecanismo de ação</span>
+        <h2 class="s-title">COMO O NOBLE SHAPE<br><em>AGE NA PELE.</em></h2>
+      </div>
+    </div>
+
+    <div class="mechanism-layout">
+      <div class="reveal">
+        <p class="s-body" style="max-width:none;margin-top:0">As três energias penetram em camadas distintas do tecido de forma simultânea — criando um protocolo de ação integrado que vai da superfície dérmica até a camada adiposa.</p>
+        <div style="margin-top:2rem;display:flex;flex-direction:column;gap:1rem;">
+          <div style="padding:1rem 1.25rem;border:var(--border-w) solid var(--border);">
+            <div style="font-family:var(--font-display);font-size:var(--t-xs);font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ns-2);margin-bottom:.3rem;">Hipoderme</div>
+            <p style="font-family:var(--font-body);font-size:var(--t-xs);font-weight:300;color:var(--muted);line-height:1.7">Laser 658nm — permeabiliza membranas das células adiposas para metabolização lipídica</p>
+          </div>
+          <div style="padding:1rem 1.25rem;border:var(--border-w) solid var(--border);">
+            <div style="font-family:var(--font-display);font-size:var(--t-xs);font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#E8913D;margin-bottom:.3rem;">Derme</div>
+            <p style="font-family:var(--font-body);font-size:var(--t-xs);font-weight:300;color:var(--muted);line-height:1.7">RF 1MHz — aquecimento controlado estimula produção de colágeno e tightening</p>
+          </div>
+          <div style="padding:1rem 1.25rem;border:var(--border-w) solid var(--border);">
+            <div style="font-family:var(--font-display);font-size:var(--t-xs);font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--e-blue);margin-bottom:.3rem;">Musculatura</div>
+            <p style="font-family:var(--font-body);font-size:var(--t-xs);font-weight:300;color:var(--muted);line-height:1.7">Freq. Média AM — contração muscular ativa drenagem linfática e eliminação do conteúdo mobilizado</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="derme-box reveal delay-2">
+        <div class="derme-vimeo-wrap">
+          <iframe
+            src="https://player.vimeo.com/video/778697552?autoplay=1&loop=1&muted=1&background=1&quality=1080p"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowfullscreen
+            frameborder="0"
+            title="Noble Shape — Mecanismo de ação na derme"
+            class="derme-iframe">
+          </iframe>
+        </div>
+        <div class="derme-label">
+          <div class="derme-label-item"><div class="derme-dot" style="background:var(--ns-2)"></div><span class="derme-label-text">Laser 658nm</span></div>
+          <div class="derme-label-item"><div class="derme-dot" style="background:#E8913D"></div><span class="derme-label-text">RF 1MHz</span></div>
+          <div class="derme-label-item"><div class="derme-dot" style="background:var(--e-blue)"></div><span class="derme-label-text">Freq. Média AM</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PADS ─── -->
+
+<!-- ─── FOR DOCTORS ─── -->
+<section id="forDoctors">
+
+  <!-- ── BEFORE / AFTER — 3 casos ── -->
+  <div class="ba-section reveal">
+    <div class="ba-meta">
+      <span class="ba-eyebrow">Antes &amp; Depois</span>
+      <h2 class="ba-title">Inovação que fala<br><em>pelos resultados</em></h2>
+    </div>
+
+    <!-- Case selector -->
+    <div class="ba-cases">
+      <button class="ba-case-btn active" onclick="setCase(0)">Caso 01</button>
+      <button class="ba-case-btn" onclick="setCase(1)">Caso 02</button>
+      <button class="ba-case-btn" onclick="setCase(2)">Caso 03</button>
+    </div>
+
+    <div class="ba-slider-wrap" id="baWrap">
+      <!-- BEFORE -->
+      <div class="ba-img ba-img-before" id="baBeforeImg">
+        <img id="imgBefore" src="ba1-before.png" alt="Antes">
+      </div>
+      <!-- AFTER — clipped -->
+      <div class="ba-img ba-img-after" id="baAfter">
+        <img id="imgAfter" src="ba1-after.png" alt="Depois">
+      </div>
+      <!-- Divider -->
+      <div class="ba-divider" id="baDivider">
+        <div class="ba-handle">
+          <div class="ba-handle-arrows">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </div>
+      <!-- Labels -->
+      <span class="ba-label-chip ba-label-before">Antes</span>
+      <span class="ba-label-chip ba-label-after">Depois</span>
+    </div>
+  </div>
+
+  <!-- ── PIONEER CARD ── -->
+  <div class="container" style="padding-top:5rem;padding-bottom:7rem;">
+    <div class="pioneer-full reveal">
+      <div class="pioneer-left">
+        <div class="doc-pioneer-badge" style="margin-bottom:1.5rem">
+          <svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          Pioneiro no Brasil
+        </div>
+        <h2 class="s-title" style="color:var(--e-cream)">SEJA O PRIMEIRO<br><em>DA SUA REGIÃO.</em></h2>
+        <p class="s-body" style="color:rgba(245,243,239,.45);max-width:none;margin-top:1.25rem">O Noble Shape chega agora ao Brasil — tecnologia validada em clínicas de referência na Coreia do Sul, um dos mercados estéticos mais exigentes do mundo. Quem entra primeiro define o preço, lidera o Google e vira referência na praça.</p>
+        <a href="#cta" class="btn-solid" style="margin-top:2rem;display:inline-block">Quero ser pioneiro →</a>
+      </div>
+      <div class="pioneer-right">
+        <div class="pioneer-item">
+          <span class="pioneer-n">01</span>
+          <div>
+            <div class="pioneer-title">Treinamento clínico exclusivo</div>
+            <p class="pioneer-body">Capacitação completa da equipe pela Entera antes do lançamento na clínica.</p>
+          </div>
+        </div>
+        <div class="pioneer-item">
+          <span class="pioneer-n">02</span>
+          <div>
+            <div class="pioneer-title">Material de comunicação pronto</div>
+            <p class="pioneer-body">KV, posts, stories e vídeos disponíveis para uso imediato nas suas redes.</p>
+          </div>
+        </div>
+        <div class="pioneer-item">
+          <span class="pioneer-n">03</span>
+          <div>
+            <div class="pioneer-title">Suporte de marketing digital</div>
+            <p class="pioneer-body">Estratégia de posicionamento e apoio para tráfego pago desde o lançamento.</p>
+          </div>
+        </div>
+        <div class="pioneer-item">
+          <span class="pioneer-n">04</span>
+          <div>
+            <div class="pioneer-title">Exclusividade por praça</div>
+            <p class="pioneer-body">Vagas limitadas por cidade. Garanta que nenhuma clínica concorrente na sua região receba o equipamento antes de você.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ─── CTA ─── -->
+<section id="cta">
+  <div class="container" style="padding-top:6rem;padding-bottom:6rem;">
+    <div class="cta-inner">
+      <div class="cta-left reveal">
+        <span class="s-eyebrow" style="color:rgba(245,243,239,.35);display:block;margin-bottom:.5rem">Solicitar demonstração</span>
+        <h2 class="s-title" style="color:var(--e-cream)">CONHEÇA O<br>NOBLE SHAPE<br><em>NA SUA CLÍNICA.</em></h2>
+        <p class="s-body" style="color:rgba(245,243,239,.45);max-width:none;margin-top:1.2rem">
+          Agendamos uma apresentação presencial com demonstração do equipamento e análise de viabilidade de retorno para sua clínica.
+        </p>
+        <div class="powered-stamp">
+          <span>⊙</span>
+          <span>Exclusivo para médicos · <strong>Powered by Entera</strong> · Beleza Inteligente</span>
+        </div>
+      </div>
+      <div class="reveal delay-2">
+        <div class="cta-form">
+          <input type="text" class="cta-field" placeholder="Nome completo / Clínica">
+          <input type="email" class="cta-field" placeholder="E-mail profissional">
+          <input type="tel" class="cta-field" placeholder="WhatsApp / Telefone">
+          <select class="cta-field" style="cursor:pointer">
+            <option value="" disabled selected>Especialidade</option>
+            <option>Dermatologia</option>
+            <option>Medicina Estética</option>
+            <option>Cirurgia Plástica</option>
+            <option>Nutrologia</option>
+            <option>Outra</option>
+          </select>
+          <button class="btn-solid" style="margin-top:.5rem">Solicitar demonstração</button>
+          <p class="cta-note">Exclusivo para profissionais médicos registrados no CRM</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-brand">
+    <svg class="footer-entera-svg" viewBox="0 420 1065 240" xmlns="http://www.w3.org/2000/svg" aria-label="entera">
+      <path fill-rule="nonzero" fill="currentColor" d="M 692.5 540.527344 C 677.484375 478.582031 589.859375 478.464844 575.382812 540.527344 Z M 719.382812 567.40625 L 575.382812 567.40625 C 584.398438 609.011719 633.125 628.054688 668.414062 603.320312 C 673.6875 599.628906 677.714844 594.671875 682.441406 590.40625 L 708.796875 596.679688 C 676.605469 654.195312 593.871094 655.566406 559.621094 599.007812 C 529.921875 549.957031 555.613281 484.5625 611.109375 470.175781 C 672.820312 454.179688 727.609375 505.589844 719.382812 567.40625"/>
+      <path fill-rule="nonzero" fill="currentColor" d="M 1031.40625 554.003906 C 1031.40625 520.691406 1004.402344 493.6875 971.089844 493.6875 C 937.773438 493.6875 910.769531 520.691406 910.769531 554.003906 C 910.769531 587.316406 937.773438 614.324219 971.089844 614.324219 C 1004.402344 614.324219 1031.40625 587.316406 1031.40625 554.003906 M 1058.261719 635.566406 L 1031.382812 635.566406 L 1031.382812 617.328125 L 1014.121094 629.34375 C 949.484375 665.078125 873.273438 611.808594 885.765625 538.433594 C 896.769531 473.804688 976.3125 444.75 1026.59375 487.238281 C 1072.144531 525.722656 1054.972656 583.097656 1058.261719 635.566406"/>
+      <path fill-rule="nonzero" fill="currentColor" d="M 382.421875 635.566406 L 356.5 635.566406 L 356.5 541.007812 C 356.5 512.882812 331.675781 495.265625 304.988281 495.265625 C 279.023438 495.265625 255.761719 509.457031 253.78125 540.046875 L 253.78125 635.566406 L 226.902344 635.566406 C 228.03125 606.929688 227.289062 577.195312 226.863281 548.648438 C 225.40625 451.1875 357.222656 442.125 379.792969 525.398438 C 380.425781 527.734375 382.804688 536.101562 382.421875 545.6875 Z"/>
+      <path fill-rule="nonzero" fill="currentColor" d="M 182.742188 512.679688 L 156.542969 518.476562 C 130.773438 482.972656 76.5 486.324219 55.25 524.875 C 27.25 575.671875 80.554688 632.730469 133.484375 608.871094 C 143.289062 604.457031 149.140625 596.785156 157.351562 590.421875 L 182.3125 596.167969 C 183.726562 597.96875 174.910156 609.097656 173.167969 611.113281 C 127.527344 663.777344 40.3125 642.417969 23.851562 575.09375 C 3.957031 493.722656 99.792969 433.558594 163.992188 487.753906 C 167.226562 490.488281 185.316406 509.683594 182.742188 512.679688"/>
+      <path fill-rule="nonzero" fill="currentColor" d="M 458.261719 427.246094 L 458.261719 473.328125 L 504.339844 473.328125 L 504.339844 498.289062 L 458.261719 498.289062 L 458.261719 596.6875 C 458.261719 597.675781 462.09375 605.015625 463.066406 606.285156 C 471.722656 617.597656 487.480469 617.148438 497.964844 608.785156 L 515.789062 626.582031 C 501.859375 642.753906 477 645.3125 458.382812 635.925781 C 443.882812 628.613281 431.382812 610.398438 431.382812 593.808594 L 431.382812 428.6875 L 432.820312 427.246094 Z"/>
+      <path fill-rule="nonzero" fill="currentColor" d="M 803.863281 635.566406 L 777.941406 635.566406 L 777.941406 511.246094 C 777.941406 505.125 784.570312 492.179688 788.523438 487.269531 C 806.988281 464.324219 841.648438 462.183594 862.398438 483.40625 L 843.566406 501.070312 C 832.199219 492.597656 815.945312 492.84375 807.855469 505.640625 C 806.625 507.589844 803.863281 515.089844 803.863281 517.007812 Z"/>
+      <path fill-rule="nonzero" fill="currentColor" d="M 170.261719 567.40625 L 74.261719 567.40625 L 74.261719 540.527344 L 170.261719 540.527344 Z"/>
+    </svg>
+    <span class="footer-sep"></span>
+    <span class="footer-ns">Noble Shape</span>
+  </div>
+  <div class="footer-links">
+    <a href="#">Tecnologia</a>
+    <a href="#">Para médicos</a>
+    <a href="#">Entera.med.br</a>
+  </div>
+  <p class="footer-copy">© 2025 Entera · Tecnologia Eunsung Global · Coreia do Sul</p>
+</footer>
+
+<script>
+// ── PAD CURSOR ──
+(function(){
+  const pad = document.getElementById('padCursor');
+  const laserDots = pad.querySelectorAll('[id^="lg"]');
+  const rfRings   = [document.getElementById('rfRing1'), document.getElementById('rfRing2')];
+  let mx=0, my=0, cx=0, cy=0, raf;
+
+  // Smooth follow with slight lag
+  function tick(){
+    cx += (mx-cx) * .22;
+    cy += (my-cy) * .22;
+    pad.style.transform = `translate(${cx-28}px,${cy-28}px)`;
+    raf = requestAnimationFrame(tick);
+  }
+  raf = requestAnimationFrame(tick);
+
+  document.addEventListener('mousemove', e=>{ mx=e.clientX; my=e.clientY; });
+
+  // Activate lasers on mousedown (simulates pad treatment activation)
+  document.addEventListener('mousedown', ()=>{
+    pad.classList.add('clicking');
+    laserDots.forEach(d=>{ d.style.opacity='1'; });
+  });
+  document.addEventListener('mouseup', ()=>{
+    pad.classList.remove('clicking');
+    laserDots.forEach(d=>{ d.style.opacity='0'; });
+  });
+
+  // RF rings + scale on interactive elements
+  const interactives = 'a, button, input, select, [class*="ba-slider"], [class*="energy-card"]';
+  document.addEventListener('mouseover', e=>{
+    if(e.target.closest(interactives)){
+      pad.classList.add('on-interactive');
+      rfRings.forEach(r=>{ r.style.opacity='1'; });
+      laserDots.forEach(d=>{ d.style.opacity='.75'; });
+    }
+  });
+  document.addEventListener('mouseout', e=>{
+    if(e.target.closest(interactives)){
+      pad.classList.remove('on-interactive');
+      rfRings.forEach(r=>{ r.style.opacity='0'; });
+      if(!pad.classList.contains('clicking'))
+        laserDots.forEach(d=>{ d.style.opacity='0'; });
+    }
+  });
+
+  // Hide cursor when leaving window
+  document.addEventListener('mouseleave', ()=>{ pad.style.opacity='0'; });
+  document.addEventListener('mouseenter', ()=>{ pad.style.opacity='1'; });
+})();
+
+// Nav scroll
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>50));
+
+// Reveal
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// ── Before / After slider — 3 cases ──
+(function(){
+  const cases = [
+    { before:'ba1-before.png', after:'ba1-after.png' },
+    { before:'ba2-before.png', after:'ba2-after.png' },
+    { before:'ba3-before.png', after:'ba3-after.png' },
+  ];
+  let currentCase = 0;
+  let dragging = false;
+  let currentPct = 50;
+
+  const wrap     = document.getElementById('baWrap');
+  const afterEl  = document.getElementById('baAfter');
+  const divider  = document.getElementById('baDivider');
+  const imgBef   = document.getElementById('imgBefore');
+  const imgAft   = document.getElementById('imgAfter');
+  const btns     = document.querySelectorAll('.ba-case-btn');
+
+  if(!wrap) return;
+
+  function setPos(x){
+    const rect = wrap.getBoundingClientRect();
+    let pct = ((x - rect.left) / rect.width) * 100;
+    pct = Math.max(2, Math.min(98, pct));
+    currentPct = pct;
+    afterEl.style.clipPath = `inset(0 0 0 ${pct}%)`;
+    divider.style.left = pct + '%';
+  }
+
+  // Expose globally for onclick handlers
+  window.setCase = function(idx){
+    currentCase = idx;
+    imgBef.style.opacity = '0';
+    imgAft.style.opacity = '0';
+    setTimeout(()=>{
+      imgBef.src = cases[idx].before;
+      imgAft.src = cases[idx].after;
+      imgBef.style.opacity = '1';
+      imgAft.style.opacity = '1';
+    }, 180);
+    btns.forEach((b,i)=> b.classList.toggle('active', i===idx));
+    // Reset to 50%
+    currentPct = 50;
+    afterEl.style.clipPath = 'inset(0 0 0 50%)';
+    divider.style.left = '50%';
+  };
+
+  // Drag handlers
+  wrap.addEventListener('mousedown',  e=>{ dragging=true; setPos(e.clientX); });
+  wrap.addEventListener('touchstart', e=>{ dragging=true; setPos(e.touches[0].clientX); },{passive:true});
+  window.addEventListener('mousemove', e=>{ if(dragging) setPos(e.clientX); });
+  window.addEventListener('touchmove', e=>{ if(dragging) setPos(e.touches[0].clientX); },{passive:true});
+  window.addEventListener('mouseup',  ()=>dragging=false);
+  window.addEventListener('touchend', ()=>dragging=false);
+
+  // Image crossfade transition
+  imgBef.style.transition = imgAft.style.transition = 'opacity .18s ease';
+
+  // Auto-animate hint on scroll into view
+  const io = new IntersectionObserver(entries=>{
+    if(!entries[0].isIntersecting) return;
+    io.disconnect();
+    let p=50, frames=0;
+    function tick(){
+      p -= 0.7;
+      if(p <= 25){ return; } // stop at 25% left
+      setPos(wrap.getBoundingClientRect().left + wrap.offsetWidth*(p/100));
+      if(++frames < 60) requestAnimationFrame(tick);
+    }
+    setTimeout(()=>requestAnimationFrame(tick), 700);
+  },{threshold:.5});
+  io.observe(wrap);
+})();
+function toggleMute(){
+  const v=document.getElementById('heroVideo');
+  const btn=document.getElementById('muteBtn');
+  v.muted=!v.muted;
+  btn.textContent=v.muted?'🔇':'🔊';
+}
+</script>
+</body>
+</html>
